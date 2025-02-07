@@ -35,12 +35,12 @@ function start-pxe-server {
 
   # Start dnsmasq
   echo-info "Starting dnsmasq..."
-  sudo dnsmasq --no-daemon --interface=$interface --dhcp-range=10.13.37.100,10.13.37.101,255.255.255.0,1h --dhcp-boot=bootmgfw.efi --enable-tftp --tftp-root=$SCRIPTPATH/PXE-Server
+  sudo dnsmasq --no-daemon --interface=$interface --dhcp-range=10.13.37.100,10.13.37.111,255.255.255.0,1h --dhcp-boot=bootmgfw.efi --enable-tftp --tftp-root=$SCRIPTPATH/PXE-Server
   echo-info "Stopping dnsmasq..."
 }
 
 # Function to start the SMBserver
-function start-pxe-server {
+function start-smb-server {
   interface=$1
 
   if [[ "$interface" = "" ]]; then
@@ -55,7 +55,7 @@ function start-pxe-server {
 
   # Start dnsmasq
   echo-info "Starting smbserver.py..."
-  sudo $(which smbserver.py) -smb2support smb "$scriptpath/PXE-Server/Boot"
+  sudo $(which smbserver.py) -smb2support smb "$SCRIPTPATH/PXE-Server/Boot"
   echo-info "Stopping smbserver.py..."
 }
 
@@ -67,10 +67,10 @@ function stop-servers {
 
 
 if [[ "$1" = "smb" ]]; then
-  start-servers shimx64.efi $2
+  start-smb-server $2
   exit
 elif [[ "$1" = "pxe" ]]; then
-  start-servers $2
+  start-pxe-server $2
   exit
 else
   printInfo
