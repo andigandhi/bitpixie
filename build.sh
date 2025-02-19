@@ -46,7 +46,7 @@ out "Populating temporary rootfs at $INITRAMFS..."
 ## Execute it and start the build process
 sudo $CACHE/alpine-make-rootfs \
     --branch latest-stable \
-    --packages 'alpine-base agetty eudev chntpw util-linux openssh' \
+    --packages 'alpine-base agetty eudev chntpw util-linux openssh doas' \
     --packages 'sgdisk ntfs-3g fuse-common' \
     --packages 'fuse mbedtls musl' \
     --packages 'vis' \
@@ -83,8 +83,9 @@ sudo $CACHE/alpine-make-rootfs \
 
         # Load also agetty.ttyS0 to see the kernel log during boot up in
         # combination with the flag `-append "console=ttyS0"`
-        ln -s /etc/init.d/agetty /etc/init.d/agetty.ttyS0
-        rc-update add agetty.ttyS0 default
+        CONSOLE="ttyS0"
+        ln -s /etc/init.d/agetty /etc/init.d/agetty.$CONSOLE
+        rc-update add agetty.$CONSOLE default
 
         # Show debug infos
         set -x
@@ -118,20 +119,17 @@ sudo $CACHE/alpine-make-rootfs \
         # Cleanup build environment
         apk del $build_packages
 
-        # Cleanup
+        ## Postprocessing
         cd $ROOT
 
-        # Add new non-root user
+        # Add new non-root user.
         NAME="bitpix"
-        addgroup ${NAME} && adduser -s /bin/sh -h /home/${NAME} -u 1000 -D -G ${NAME} ${NAME}
-        chmod -R 777 /root
+        addgroup ${NAME}
+        adduser -s /bin/sh -h /home/${NAME} -u 1000 -D -G ${NAME} ${NAME}
+        addgroup bitpix wheel # add new user to group wheel
 
-        # Create necessary files for namespaces.
-        # See
-        #   https://rootlesscontaine.rs/getting-started/common/subuid/
-        #   https://wiki.gentoo.org/wiki/Subuid_subgid
-        # for more information.
-        echo 'root:100000:65536' | tee /etc/subuid | tee /etc/subgid
+        chmod -R 777 /root
+        chown root:root /etc/doas.conf
 
         # Delete password(s)
         passwd -d root
@@ -147,15 +145,25 @@ if [ "$?" = "1" ]; then
     exit 1
 fi
 
-out "Creating initramfs from temporary rootfs at $INITRAMFS..."
+if [ "$DEBUG" = "1" ]; then
+    COMPRESS="gzip"
+    FILE_EXTENSION="gz"
+else
+    # Use a compression algorithm to compress to the most possible (because the
+    # initramfs needs to be loaded via PXE)
+    COMPRESS="xz -z -C crc32 -9 --threads=0 -c -"
+    FILE_EXTENSION="xz"
+fi
 
-OUTPUT="$SRC_ROOT/pxe-server/bitpixie-initramfs.xz"
+OUTPUT="$SRC_ROOT/pxe-server/bitpixie-initramfs"
+# Just for correct logging for user
+RELATIVE_OUTPUT="$(realpath --relative-to $SRC_ROOT $OUTPUT)"
+
+out "Creating initramfs $RELATIVE_OUTPUT from temporary rootfs at $INITRAMFS..."
 # Note: Needs to be run as root because all files in the rootfs are chowned by root
-(cd $INITRAMFS; sudo bash -c "find . | cpio -o -H newc | xz -z -C crc32 -9 --threads=0 -c -") > $OUTPUT
-# Faster build for debugging
-# (cd $INITRAMFS; sudo bash -c "find . | cpio -o -H newc | gzip") > $OUTPUT
+(cd $INITRAMFS; sudo bash -c "find . | cpio -o -H newc | $COMPRESS") > $OUTPUT
 
-out "Created initramfs $(basename $OUTPUT) at $(dirname $OUTPUT)."
+out "Created initramfs $RELATIVE_OUTPUT with file extension ${FILE_EXTENSION} at $(dirname $OUTPUT)."
 
 if [ "$DEBUG" = "1" ]; then
     # Deactivate deletion of INITRAMFS

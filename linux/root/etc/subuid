@@ -1,0 +1,5 @@
+# See
+#   https://rootlesscontaine.rs/getting-started/common/subuid/
+#   https://wiki.gentoo.org/wiki/Subuid_subgid
+# for more information.
+root:100000:65536

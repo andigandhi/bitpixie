@@ -28,8 +28,11 @@ To build the initramfs, clone the repository and execute build.sh:
 ```
 $ git clone --depth 1 https://github.com/andigandhi/bitpixie
 $ cd bitpixie
-$ ./build.sh
+$ ./build.sh [-d|--debug]
 ```
+
+See the chapter [`Building the initrd`](#building-the-initrd) for more
+information.
 
 > [!note]
 > The repository with a prebuilt alpine initramfs can be found in the releases section.
@@ -116,13 +119,14 @@ The XML of the network interface should look lke this:
 ```
 
 ### Building the initrd
-The complete `bitpixie-initramfs,gz` can be built using the script `./build
-[-d|--debug]`. If the `--debug` flag is used the temporary rootfs directory
-will be not deleted in order to manually examinate it via e.g. `sudo
+The complete `bitpixie-initramfs[.gz,.xz]` can be built using the script
+`./build [-d|--debug]`. If the `--debug` flag is used the temporary rootfs
+directory will be not deleted in order to manually examinate it via e.g. `sudo
 [chroot|arch-chroot] /path/to/temp/initramfs sh`. The final gzipped initramfs
 is automatically transfered to the `pxe-server/` directory.
 
-The initramfs can be tested locally on the terminal via QEMU:
+The initramfs can be tested locally on the terminal via the example QEMU
+command:
 
 ```
 # Install qemu-system-x86_64 (minimal configuration)
@@ -131,10 +135,13 @@ The initramfs can be tested locally on the terminal via QEMU:
 qemu-system-x86_64 \
   -m 1G -enable-kvm  \
   -kernel pxe-server/linux \
-  -initrd pxe-server/bitpixie-initramfs.gz \
+  -initrd pxe-server/bitpixie-initramfs \
   -append "console=ttyS0" \
   -nographic
 ```
+
+> [!NOTE]  
+> There are currently two user: `root` and `bitpix`. Login as `bitpix`.
 
 If a simple QEMU ethernet connection is required, the following flags can be
 added:
