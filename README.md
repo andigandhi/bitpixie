@@ -42,13 +42,13 @@ The attack consists of two separate steps.
 First, a modified BCD configuration file must be created specifically for the victim.
 The next step is to boot the target via PXE using the modified BCD file, so that the VMK can be extracted from memory.
 
-The TFTP server can be started with the script `start-server.sh`:
+The servers can be started with the script `start-server.sh`:
 ```
-Starting the SMB server for exchanging the BCD file:
-$ ./start-server.sh smb <interface>
-
 Starting the TFTP and DHCP server for PXE booting:
 $ ./start-server.sh pxe <interface>
+
+Starting the SMB server for exchanging the BCD file:
+$ ./start-server.sh smb <interface>
 ```
 
 To boot into the linux system through PXE-boot, press Restart while holding down the Shift key.
@@ -73,7 +73,7 @@ The modified BCD file will be directly moved to the attacker machine so you can 
 ![BCD File Transfer](images/grab-bcd-smb.gif)
 
 ### Breaking BitLocker
-Start the TFTP server in exploit mode: `./start-server.sh exploit <interface>`.
+With the servers running, continue to boot the device in PXE mode.
 
 In the Advanced Boot Options click on `Use a device` and select IPv4 PXE Boot.
 The PXE boot process should start and finally drop into the Alpine initramfs.
@@ -140,7 +140,7 @@ qemu-system-x86_64 \
   -nographic
 ```
 
-> [!NOTE]  
+> [!NOTE]
 > There are currently two user: `root` and `bitpix`. Login as `root`.
 
 If a simple QEMU ethernet connection is required, the following flags can be
@@ -158,7 +158,7 @@ qemu-system-x86_64 \
   -netdev user,id=net0 -device virtio-net-pci,netdev=net0
 ```
 
-> [!NOTE]  
+> [!NOTE]
 > If a specific functionality is missing then this could be due to a not loaded
 > driver. All loaded drivers can be displayed with `lsmod` and loaded with
 > `modprobe DRIVER`.
