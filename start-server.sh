@@ -19,24 +19,29 @@ function printInfo {
 
 # Function to start the PXE and DHCP server
 function start-pxe-server {
-  interface=$1
+  interface="$1"
+  ip="10.13.37.100"
 
   if [[ "$interface" = "" ]]; then
     echo-warning "No interface specified!"
     printInfo
-    exit
+    exit 1
   fi
 
   # Add IP address to interface
-  sudo ip a add 10.13.37.100/24 dev $interface
-  echo-info "Interface $interface has IP address 10.13.37.100/24"
+  sudo ip a add "$ip/24" dev "$interface"
+  echo-info "Interface $interface has IP address $ip/24"
 
   stop-servers
 
   # Start dnsmasq
   echo-info "Starting dnsmasq..."
-  sudo dnsmasq --no-daemon --interface=$interface --dhcp-range=10.13.37.100,10.13.37.101,255.255.255.0,1h --dhcp-boot=bootmgfw.efi --enable-tftp --tftp-root=$SCRIPTPATH/pxe-server
+  sudo dnsmasq --no-daemon --interface="$interface" --bind-interfaces --except-interface=lo --dhcp-range=10.13.37.100,10.13.37.101,255.255.255.0,1h --dhcp-boot=bootmgfw.efi --enable-tftp --tftp-root="$SCRIPTPATH/pxe-server"
   echo-info "Stopping dnsmasq..."
+
+  # Remove IP address from interface
+  sudo ip a del "$ip/24" dev "$interface"
+  echo-info "Removed IP address $ip/24 from interface $interface"
 }
 
 # Function to start the SMBserver
@@ -46,16 +51,12 @@ function start-smb-server {
   if [[ "$interface" = "" ]]; then
     echo-warning "No interface specified!"
     printInfo
-    exit
+    exit 1
   fi
 
-  # Add IP address to interface
-  sudo ip a add 10.13.37.100/24 dev $interface
-  echo-info "Interface $interface has IP address 10.13.37.100/24"
-
-  # Start dnsmasq
+  # Start smbserver
   echo-info "Starting smbserver.py..."
-  sudo $(which smbserver.py) -smb2support smb "$SCRIPTPATH/pxe-server/Boot"
+  sudo "$(which smbserver.py)" -smb2support smb "$SCRIPTPATH/pxe-server/Boot"
   echo-info "Stopping smbserver.py..."
 }
 
@@ -67,10 +68,10 @@ function stop-servers {
 
 
 if [[ "$1" = "smb" ]]; then
-  start-smb-server $2
+  start-smb-server "$2"
   exit
 elif [[ "$1" = "pxe" ]]; then
-  start-pxe-server $2
+  start-pxe-server "$2"
   exit
 else
   printInfo
