@@ -58,7 +58,12 @@ function start-smb-server {
 
   # Start smbserver
   echo-info "Starting smbserver.py..."
-  sudo "$(which smbserver.py)" -smb2support smb "$SCRIPTPATH/pxe-server/Boot"
+  smbserver="$(command -v smbserver.py || command -v impacket-smbserver)"
+  if [[ "$smbserver" == "" ]]; then
+    echo-warning "smbserver from impacket not found!"
+    exit 1
+  fi
+  sudo "$smbserver" -smb2support smb "$SCRIPTPATH/pxe-server/Boot"
   echo-info "Stopping smbserver.py..."
 }
 
