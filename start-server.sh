@@ -19,6 +19,8 @@ function printInfo {
 
 # Function to start the PXE and DHCP server
 function start-pxe-server {
+  # serves Windows Boot Manager by default but another file (relative to pxe-server dir) can be specified in BOOTFILE env variable
+  boot_file="${BOOTFILE:-bootmgfw.efi}"
   interface="$1"
   ip="10.13.37.100"
 
@@ -36,7 +38,7 @@ function start-pxe-server {
 
   # Start dnsmasq
   echo-info "Starting dnsmasq..."
-  sudo dnsmasq --no-daemon --interface="$interface" --bind-interfaces --except-interface=lo --dhcp-range=10.13.37.100,10.13.37.101,255.255.255.0,1h --dhcp-boot=bootmgfw.efi --enable-tftp --tftp-root="$SCRIPTPATH/pxe-server"
+  sudo dnsmasq --no-daemon --interface="$interface" --bind-interfaces --except-interface=lo --dhcp-range=10.13.37.100,10.13.37.101,255.255.255.0,1h --dhcp-boot="$boot_file" --enable-tftp --tftp-root="$SCRIPTPATH/pxe-server"
   echo-info "Stopping dnsmasq..."
 
   # Remove IP address from interface
