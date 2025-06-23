@@ -169,8 +169,14 @@ qemu-system-x86_64 \
 > ```
 
 ## Alternative Method of obtaining the BCD (not recommended)
-Boot the victim system into the initramfs using PXE boot: `./start-server.sh get-bcd <interface>`
-On the victim machine you can identify the drive containing the Windows installation (often /dev/sda).
+Boot the victim system into the Linux initramfs using PXE boot:
+
+```
+$ BOOTFILE=shimx64.efi ./start-server.sh pxe <interface>
+[...]
+```
+
+On the victim machine you can identify the drive containing the Windows installation (often `/dev/sda`).
 
 On the attacker machine execute the BCD extractor script:
 ```
@@ -180,9 +186,7 @@ $ ./grab-bcd.sh /dev/sda
 [+] Info: Created modified BCD file: pxe-server/Boot/BCD
 ```
 This script obtains the disk and partition GUID from the victim computer and creates a registry patch file.
-Afterwards the BCD-file gets patched and copied to pxe-server/Boot/BCD.
-> [!note]
-> The template file file needs to be served as `Boot\BCD` via PXE.
+Afterwards the BCD-file gets patched and copied to `pxe-server/Boot/BCD`.
 
 Now you are ready to perform the actual attack!
-Reboot the victim system into the startup settings again.
+Reboot the victim system into the startup settings again and start the PXE server in default mode without setting the `BOOTFILE` variable.
