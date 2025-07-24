@@ -102,8 +102,8 @@ sudo $CACHE/alpine-make-rootfs \
         cve="$(mktemp -d)"
         git clone --single-branch https://github.com/andigandhi/CVE-2024-1086_bitpixie.git $cve
         cd $cve
-        # Use commit 180d1a151b3e ("Added compatibility for PBA") as HEAD
-        git reset --hard 180d1a151b3e
+        # Use commit 1412f19fa72c ("Removed bug where code waits for user input") as HEAD
+        git reset --hard 1412f19fa72c
         make CC=cc && cp ./exploit /usr/bin
 
         # Build dislocker
