@@ -2,5 +2,4 @@
 bitpixie exploit help
 
 run-exploit <device>  get the VMK and unlock <device>
-exploit               only get the VMK and export as VMK.dat
-
+get-vmk               only get the VMK and export as VMK.dat
