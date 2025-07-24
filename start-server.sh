@@ -3,7 +3,7 @@
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 function echo-info {
-    echo -e "\e[34;1m[+]\e[0m \e[34mInfo: $1\e[0m" >&2
+    echo -e "\e[33;1m[+]\e[0m \e[33mInfo: $1\e[0m" >&2
 }
 
 function echo-warning {
@@ -11,9 +11,9 @@ function echo-warning {
 }
 
 function printInfo {
-  echo -e "\e[34;1mUsage:\e[0m"
-  echo -e "\e[34;1m- Start PXE server: \e[0m \e[34m$0 pxe <interface>\e[0m"
-  echo -e "\e[34;1m- Start SMB server: \e[0m \e[34m$0 smb <interface>\e[0m"
+  echo -e "\e[33;1mUsage:\e[0m"
+  echo -e "\e[33;1m- Start PXE server: \e[0m \e[33m$0 pxe <interface>\e[0m"
+  echo -e "\e[33;1m- Start SMB server: \e[0m \e[33m$0 smb <interface>\e[0m"
 }
 
 

@@ -5,7 +5,7 @@ SEARCHSTRING1="\x12\x34\x56\x78\x13\x37\x11\x11\x13\x37\x12\x34\x56\x78\x91\x23"
 SEARCHSTRING2="\x12\x34\x56\x78\x13\x37\x22\x22\x13\x37\x12\x34\x56\x78\x91\x23"
 
 function echo-info {
-    echo -e "\e[34;1m[+]\e[0m \e[34mInfo: $1\e[0m" >&2
+    echo -e "\e[33;1m[+]\e[0m \e[33mInfo: $1\e[0m" >&2
 }
 
 function echo-warning {
@@ -13,14 +13,14 @@ function echo-warning {
 }
 
 function printInfo {
-  echo -e "\e[34;1mUsage: $0 <drive>\e[0m"
-  echo -e "\e[34;1m Example: $0 /dev/sda\e[0m"
+  echo -e "\e[33;1mUsage: $0 <drive>\e[0m"
+  echo -e "\e[33;1m Example: $0 /dev/sda\e[0m"
 }
 
 # I found a VBS converter for GUIDs and ported it to bash: https://learn.microsoft.com/en-us/troubleshoot/windows-server/admin-development/convert-string-guid-to-hexadecimal-string
 function GuidToHex {
     GUID=$1
-    
+
     # Remove unnecessary symbols
     tmpGUID=`echo "$GUID" | tr -d '{}-'`
 
