@@ -102,8 +102,9 @@ sudo $CACHE/alpine-make-rootfs \
         cve="$(mktemp -d)"
         git clone --single-branch https://github.com/andigandhi/CVE-2024-1086_bitpixie.git $cve
         cd $cve
-        # Use commit 1412f19fa72c ("Removed bug where code waits for user input") as HEAD
-        git reset --hard 1412f19fa72c
+        # Use commit d2b41205ff57 ("Added wildcard search algorithm to scan for starting bytes
+        # "03 20 xx 00"") as HEAD
+        git reset --hard d2b41205ff57
         make CC=cc && cp ./exploit /usr/bin
 
         # Build dislocker
