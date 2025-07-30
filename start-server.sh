@@ -38,7 +38,7 @@ function start-pxe-server {
 
   # Start dnsmasq
   echo-info "Starting dnsmasq..."
-  sudo dnsmasq --no-daemon --interface="$interface" --bind-interfaces --except-interface=lo --dhcp-range=10.13.37.100,10.13.37.101,255.255.255.0,1h --dhcp-boot="$boot_file" --enable-tftp --tftp-root="$SCRIPTPATH/pxe-server"
+  sudo dnsmasq --no-daemon --interface="$interface" --bind-interfaces --except-interface=lo --dhcp-range=10.13.37.100,10.13.37.199,255.255.255.0,1h --dhcp-boot="$boot_file" --enable-tftp --tftp-root="$SCRIPTPATH/pxe-server"
   echo-info "Stopping dnsmasq..."
 
   # Remove IP address from interface
