@@ -20,7 +20,7 @@ bcdedit /store BCD_modded /displayorder {%REBOOT_GUID%} /addlast
 
 setlocal
 :PROMPT
-SET /P AREYOUSURE=Do you want to move the file to the SMB server on 10.13.37.1 (Y/[N])?
+SET /P AREYOUSURE=Do you want to move the file to the SMB server on 10.13.37.100 (Y/[N])?
 IF /I "%AREYOUSURE%" NEQ "Y" GOTO END
 
 move BCD_modded S:\BCD
